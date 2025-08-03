@@ -1,13 +1,19 @@
 package cmd
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+	"log"
+
+	View "github.com/PARTHIB-DEB/TermoTalks/cli/view"
+	"github.com/spf13/cobra"
+)
 
 var (
-	firstname string
-	lastname  string
-	email     string
-	password  string
-	// username  string = ""
+	firstname string = ""
+	lastname  string = ""
+	email     string = ""
+	password  string = ""
+	username  string = ""
 )
 
 var ProfCmd = &cobra.Command{
@@ -19,19 +25,26 @@ var ProfCmd = &cobra.Command{
 			return
 		} else if args[0] == "view" {
 			// Logic to view profile
-			cmd.Println("Viewing profile...")
+			uname := cmd.Flags().Lookup("username")
+			if uname != nil && uname.Value.String() != "" {
+				cmd.Println("Viewing profile for user:", uname.Value.String())
+			} else {
+				log.Fatal("Only Username is required to view your profile")
+			}
 		} else if args[0] == "create" {
-			// Logic to create profile
-			cmd.Println("Creating profile...")
-			// CreateProfile(firstname, lastname, email, password)
+			var pwd2 string
+			fmt.Print("Enter Password Again :")
+			fmt.Scanf("%s", &pwd2)
+			View.CreateProfileView(firstname, lastname, email, password, pwd2)
 		} else if args[0] == "update" {
-			// Logic to update profile
-			cmd.Println("Updating profile...")
-			// UpdateProfile(firstname, lastname, email, password, username)
+			View.UpdateProfileView(firstname, lastname, email, password, username)
 		} else if args[0] == "delete" {
-			// Logic to delete profile
-			cmd.Println("Deleting profile...")
-			// DeleteProfile(username)
+			uname := cmd.Flags().Lookup("username")
+			if uname != nil && uname.Value.String() != "" {
+				View.DeleteProfileView(uname.Value.String())
+			} else {
+				log.Fatal("Only Username is required to delete your profile")
+			}
 		} else {
 			cmd.Help()
 		}
@@ -43,4 +56,5 @@ func init() {
 	ProfCmd.Flags().StringVarP(&lastname, "lastname", "l", "", "Last name of the user")
 	ProfCmd.Flags().StringVarP(&email, "email", "e", "", "Email address of the user")
 	ProfCmd.Flags().StringVarP(&password, "password", "p", "", "Password for the user profile")
+	ProfCmd.Flags().StringVarP(&username, "username", "u", "", "Username for the user profile")
 }
